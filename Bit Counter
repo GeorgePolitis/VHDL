@@ -1,0 +1,67 @@
+-- BIT COUNTER
+-- Reads all the bits in a byte through eight different inputs and counts the number of <<0>> and <<1>> . Each result is displayed by dedicated seven segments. 
+ library ieee;
+ use ieee.std_logic_1164.all;
+ use ieee.std_logic_signed.all;
+
+ entity countbits is
+ port(clk:in std_logic;
+     xa:in std_logic_vector(7 downto 0);--bits separeted
+     z:out std_logic_vector(6 downto 0);--seven segment of <<0>>
+     y:out std_logic_vector(6 downto 0);--seven segment of <<1>>
+     led:out std_logic_vector(7 downto 0));--leds to visualy check each  bit 
+ end countbits;
+
+ architecture beh of countbits is
+ 
+--these signals help the seven segments to display the correct number.(Lines 47-65)  
+  signal newy,newz:std_logic_vector(3 downto 0); 
+
+  begin
+  led(7)<= xa(7);
+  led(6)<= xa(6);
+  led(5)<= xa(5);
+  led(4)<= xa(4);
+  led(3)<= xa(3);
+  led(2)<= xa(2);
+  led(1)<= xa(1);
+  led(0)<= xa(0);
+  process (clk)
+    variable tempy: std_logic_vector(3 downto 0);
+    Begin
+     tempy:="0000";
+     if (clk'event and clk='1') then
+      for i in 0 to 7 loop
+        if (xa(i)='1') then 
+          tempy:=tempy+'1';
+        end if;
+--Lines 39-42 reasure that the output will be displayed only when the whole byte has been checked
+        if (i=7) then
+          newy<=tempy;
+          newz<="1000"-newy;
+        end if;
+      end loop;
+     end if;
+  end process;
+
+  y<="1000000" when newy="0000" else
+     "1111001" when newy="0001" else
+     "0100100" when newy="0010" else
+     "0110000" when newy="0011" else
+     "0011001" when newy="0100" else
+     "0010010" when newy="0101" else
+     "0000010" when newy="0110" else
+     "1111000" when newy="0111" else
+     "0000000" when newy="1000" ;
+
+  z<="1000000" when newz="0000" else
+     "1111001" when newz="0001" else
+     "0100100" when newz="0010" else
+     "0110000" when newz="0011" else
+     "0011001" when newz="0100" else
+     "0010010" when newz="0101" else
+     "0000010" when newz="0110" else
+     "1111000" when newz="0111" else
+     "0000000" when newz="1000" ;
+
+ end beh;
