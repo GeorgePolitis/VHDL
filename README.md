@@ -1,2 +1,2 @@
 # VHDL
-Coding example of the VHSIC Hardware Description Language 
+Coding examples of the VHSIC Hardware Description Language 
